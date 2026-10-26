@@ -104,7 +104,7 @@ function RoomCard({ room, index, onSelectRoom }: { room: Room; index: number; on
 
 export default function Rooms({ onSelectRoom }: RoomsProps) {
   return (
-    <section id="habitaciones" className="section-padding bg-[var(--dark-bg)] relative">
+    <section id="habitaciones" className="section-padding bg-[var(--dark-bg)] relative overflow-x-clip">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--gold)]/3 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

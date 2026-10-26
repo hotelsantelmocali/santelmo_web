@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Crown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import BrandLogo from "./BrandLogo";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,24 +40,11 @@ export default function Navbar() {
             {/* Logo */}
             <motion.button
               onClick={() => handleNavClick("#inicio")}
-              className="flex items-center gap-2 group"
+              className="flex items-center"
+              aria-label="Hotel Santelmo, inicio"
               whileHover={{ scale: 1.02 }}
             >
-              <Crown
-                className="w-7 h-7 text-gold transition-transform group-hover:rotate-12"
-                style={{ color: "var(--gold)" }}
-              />
-              <div className="flex flex-col leading-tight">
-                <span
-                  className="font-display text-xl font-bold tracking-widest uppercase"
-                  style={{ color: "var(--gold)" }}
-                >
-                  Santelmo
-                </span>
-                <span className="text-[9px] tracking-[0.4em] uppercase text-[var(--text-secondary)]">
-                  Hotel
-                </span>
-              </div>
+              <BrandLogo className="h-auto w-32 sm:w-36 lg:w-40" />
             </motion.button>
 
             {/* Desktop Nav */}

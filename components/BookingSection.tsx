@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import BookingForm from "./BookingForm";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import BrandLogo from "./BrandLogo";
 
 interface BookingSectionProps {
   preselectedRoom?: string;
@@ -83,12 +84,7 @@ export default function BookingSection({ preselectedRoom }: BookingSectionProps)
           >
             {/* Logo card */}
             <div className="bg-[var(--dark-card)] border border-[var(--gold)]/30 p-8 text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-3xl" style={{ color: "var(--gold)" }}>♛</span>
-              </div>
-              <p className="font-display text-2xl font-bold text-white tracking-widest">SANTELMO</p>
-              <p className="text-xs tracking-[0.5em] uppercase text-[var(--text-secondary)] mt-1">Hotel</p>
-              <div className="w-16 h-px bg-[var(--gold)] mx-auto mt-4" />
+              <BrandLogo className="h-auto w-48 max-w-full mx-auto" />
             </div>
 
             {/* Contact info */}

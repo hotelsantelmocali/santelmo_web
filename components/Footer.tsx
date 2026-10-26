@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Crown, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import BrandLogo from "./BrandLogo";
 
 export default function Footer() {
   return (
@@ -14,14 +15,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Crown className="w-6 h-6" style={{ color: "var(--gold)" }} />
-              <div>
-                <p className="font-display text-xl font-bold tracking-widest uppercase text-white">
-                  Santelmo
-                </p>
-                <p className="text-[9px] tracking-[0.4em] uppercase text-[var(--text-muted)]">Hotel</p>
-              </div>
+            <div className="mb-4">
+              <BrandLogo className="h-auto w-40" />
             </div>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
               {siteConfig.tagline}
