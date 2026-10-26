@@ -236,12 +236,27 @@
   background-color: rgb(201 168 76 / 12%);
 }
 
-.rdp-santelmo .rdp-selected .rdp-day_button {
+.rdp-root.rdp-santelmo .rdp-selected .rdp-day_button {
+  background-color: var(--gold);
   border-color: var(--gold-light);
+  color: var(--dark-bg);
 }
 
-.rdp-santelmo .rdp-range_middle .rdp-day_button {
+.rdp-root.rdp-santelmo .rdp-range_start .rdp-day_button,
+.rdp-root.rdp-santelmo .rdp-range_end .rdp-day_button {
+  background-color: var(--gold);
+  color: var(--dark-bg);
+}
+
+.rdp-root.rdp-santelmo .rdp-range_middle {
+  background-color: rgb(201 168 76 / 18%);
+}
+
+.rdp-root.rdp-santelmo .rdp-range_middle .rdp-day_button {
+  background-color: transparent;
+  color: var(--text-primary);
   border-radius: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .rdp-santelmo .rdp-today:not(.rdp-selected) .rdp-day_button {
