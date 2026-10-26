@@ -86,7 +86,7 @@ export default function Hero() {
         className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto"
       >
         {/* Logo mark */}
-        <motion.div variants={itemVariants} className="mb-6">
+        <motion.div variants={itemVariants} className="mb-6 translate-y-4 sm:translate-y-0">
           <span className="text-xs tracking-[0.5em] uppercase text-[var(--gold)] font-semibold">
             ✦ Bienvenidos ✦
           </span>
