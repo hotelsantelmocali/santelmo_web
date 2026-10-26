@@ -4,11 +4,23 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { TranslationKey } from "@/i18n/translations";
 import BrandLogo from "./BrandLogo";
+import LanguageSwitcher from "./LanguageSwitcher";
+
+const navTranslationKeys: Record<string, TranslationKey> = {
+  "#inicio": "nav.home",
+  "#nosotros": "nav.about",
+  "#habitaciones": "nav.rooms",
+  "#servicios": "nav.services",
+  "#reserva": "nav.booking",
+};
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -41,7 +53,7 @@ export default function Navbar() {
             <motion.button
               onClick={() => handleNavClick("#inicio")}
               className="flex items-center"
-              aria-label="Hotel Santelmo, inicio"
+              aria-label={t("nav.logoAria")}
               whileHover={{ scale: 1.02 }}
             >
               <BrandLogo className="h-auto w-32 sm:w-36 lg:w-40" />
@@ -55,7 +67,7 @@ export default function Navbar() {
                   onClick={() => handleNavClick(link.href)}
                   className="text-xs tracking-widest uppercase text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors duration-300 relative group"
                 >
-                  {link.label}
+                  {t(navTranslationKeys[link.href])}
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-[var(--gold)] transition-all duration-300 group-hover:w-full" />
                 </button>
               ))}
@@ -68,39 +80,42 @@ export default function Navbar() {
               onClick={() => handleNavClick("#reserva")}
               className="hidden md:block px-6 py-2.5 text-xs tracking-widest uppercase font-semibold border border-[var(--gold)] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-[var(--dark-bg)] transition-all duration-300"
             >
-              Reservar
+              {t("nav.booking")}
             </motion.button>
 
-            {/* Mobile Hamburger */}
-            <button
-              className="md:hidden p-2 text-[var(--gold)]"
-              onClick={() => setIsMobileOpen((v) => !v)}
-              aria-label="Toggle mobile menu"
-            >
-              <AnimatePresence mode="wait">
-                {isMobileOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X className="w-6 h-6" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Menu className="w-6 h-6" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LanguageSwitcher />
+              <button
+                className="md:hidden p-2 text-[var(--gold)]"
+                onClick={() => setIsMobileOpen((v) => !v)}
+                aria-label={t("nav.mobileMenu")}
+                aria-expanded={isMobileOpen}
+              >
+                <AnimatePresence mode="wait">
+                  {isMobileOpen ? (
+                    <motion.div
+                      key="close"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <X className="w-6 h-6" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Menu className="w-6 h-6" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -124,7 +139,7 @@ export default function Navbar() {
                 onClick={() => handleNavClick(link.href)}
                 className="font-display text-3xl text-[var(--text-primary)] hover:text-[var(--gold)] transition-colors tracking-widest uppercase"
               >
-                {link.label}
+                {t(navTranslationKeys[link.href])}
               </motion.button>
             ))}
             <motion.button
@@ -134,7 +149,7 @@ export default function Navbar() {
               onClick={() => handleNavClick("#reserva")}
               className="mt-4 px-10 py-4 text-sm tracking-widest uppercase font-semibold bg-[var(--gold)] text-[var(--dark-bg)]"
             >
-              Reservar Ahora
+              {t("nav.reserveNow")}
             </motion.button>
           </motion.div>
         )}

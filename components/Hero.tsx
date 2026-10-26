@@ -5,8 +5,10 @@ import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import heroImage from "../public/images/hero.jpg";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 export default function Hero() {
+  const { t } = useLanguage();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -49,7 +51,7 @@ export default function Hero() {
       >
         <Image
           src={heroImage}
-          alt="Hotel Santelmo Cali — Lujo y elegancia"
+          alt={t("hero.alt")}
           fill
           priority
           sizes="100vw"
@@ -88,7 +90,7 @@ export default function Hero() {
         {/* Logo mark */}
         <motion.div variants={itemVariants} className="mb-6 translate-y-4 sm:translate-y-0">
           <span className="text-xs tracking-[0.5em] uppercase text-[var(--gold)] font-semibold">
-            ✦ Bienvenidos ✦
+            ✦ {t("hero.welcome")} ✦
           </span>
         </motion.div>
 
@@ -97,9 +99,9 @@ export default function Hero() {
           variants={itemVariants}
           className="font-display text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-tight mb-6"
         >
-          <span className="block">UN HOTEL PARA</span>
-          <span className="block shimmer-gold">GRUPOS Y EQUIPOS</span>
-          <span className="block text-white">EN CALI</span>
+          <span className="block">{t("hero.title.first")}</span>
+          <span className="block shimmer-gold">{t("hero.title.second")}</span>
+          <span className="block text-white">{t("hero.title.third")}</span>
         </motion.h1>
 
         {/* Tagline */}
@@ -107,7 +109,7 @@ export default function Hero() {
           variants={itemVariants}
           className="text-base sm:text-lg text-[var(--text-secondary)] tracking-widest mb-10 uppercase"
         >
-          Habitaciones cómodas · Atención 24/7 · Zona sur de Cali
+          {t("hero.tagline")}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -121,7 +123,7 @@ export default function Hero() {
             onClick={() => handleScroll("reserva")}
             className="px-10 py-4 bg-[var(--gold)] text-[var(--dark-bg)] text-sm font-bold tracking-widest uppercase transition-all"
           >
-            Consultar Disponibilidad
+            {t("hero.availability")}
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.04 }}
@@ -129,7 +131,7 @@ export default function Hero() {
             onClick={() => handleScroll("habitaciones")}
             className="px-10 py-4 border border-white/40 text-white text-sm font-semibold tracking-widest uppercase hover:border-[var(--gold)] hover:text-[var(--gold)] transition-all"
           >
-            Ver Habitaciones
+            {t("hero.viewRooms")}
           </motion.button>
         </motion.div>
       </motion.div>
@@ -143,7 +145,7 @@ export default function Hero() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[var(--gold)] flex flex-col items-center gap-1 group"
       >
         <span className="text-[10px] tracking-[0.3em] uppercase text-[var(--text-secondary)]">
-          Descubrir
+          {t("hero.discover")}
         </span>
         <ChevronDown className="w-5 h-5" />
       </motion.button>

@@ -151,3 +151,120 @@
   background-clip: text;
   animation: shimmer 4s linear infinite;
 }
+
+.rdp-root.rdp-santelmo {
+  --rdp-accent-color: var(--gold);
+  --rdp-accent-background-color: rgb(201 168 76 / 18%);
+  --rdp-day-height: 38px;
+  --rdp-day-width: 38px;
+  --rdp-day_button-height: 34px;
+  --rdp-day_button-width: 34px;
+  --rdp-day_button-border-radius: 0.65rem;
+  --rdp-selected-border: 1px solid var(--gold-light);
+  --rdp-range_middle-background-color: rgb(201 168 76 / 18%);
+  --rdp-range_middle-color: var(--text-primary);
+  --rdp-range_start-color: var(--dark-bg);
+  --rdp-range_start-date-background-color: var(--gold);
+  --rdp-range_end-color: var(--dark-bg);
+  --rdp-range_end-date-background-color: var(--gold);
+  --rdp-today-color: var(--gold-light);
+  --rdp-disabled-opacity: 0.28;
+  --rdp-outside-opacity: 0.4;
+  --rdp-weekday-opacity: 1;
+  --rdp-weekday-padding: 0.5rem 0.125rem;
+  --rdp-nav_button-width: 2rem;
+  --rdp-nav_button-height: 2rem;
+  --rdp-nav-height: 2.5rem;
+
+  width: 100%;
+  color: var(--text-primary);
+  font-family: var(--font-inter), sans-serif;
+}
+
+.rdp-santelmo .rdp-month {
+  width: 100%;
+}
+
+.rdp-santelmo .rdp-month_caption {
+  justify-content: center;
+  height: var(--rdp-nav-height);
+  color: var(--gold-light);
+  font-family: var(--font-playfair), serif;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.rdp-santelmo .rdp-month_grid {
+  width: 100%;
+}
+
+.rdp-santelmo .rdp-weekday {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rdp-santelmo .rdp-button_previous,
+.rdp-santelmo .rdp-button_next {
+  z-index: 2;
+  border: 1px solid rgb(201 168 76 / 25%);
+  border-radius: 9999px;
+  color: var(--gold);
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.rdp-santelmo .rdp-button_previous:hover,
+.rdp-santelmo .rdp-button_next:hover {
+  border-color: var(--gold);
+  background-color: rgb(201 168 76 / 12%);
+}
+
+.rdp-santelmo .rdp-chevron {
+  fill: var(--gold);
+}
+
+.rdp-santelmo .rdp-day_button {
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.rdp-santelmo .rdp-day_button:hover:not(:disabled) {
+  border-color: rgb(201 168 76 / 70%);
+  background-color: rgb(201 168 76 / 12%);
+}
+
+.rdp-santelmo .rdp-selected .rdp-day_button {
+  border-color: var(--gold-light);
+}
+
+.rdp-santelmo .rdp-range_middle .rdp-day_button {
+  border-radius: 0;
+}
+
+.rdp-santelmo .rdp-today:not(.rdp-selected) .rdp-day_button {
+  border-color: rgb(201 168 76 / 65%);
+  color: var(--gold-light);
+}
+
+.rdp-santelmo .rdp-disabled .rdp-day_button {
+  color: var(--text-muted);
+}
+
+.rdp-santelmo .rdp-day_button:focus-visible,
+.rdp-santelmo .rdp-button_previous:focus-visible,
+.rdp-santelmo .rdp-button_next:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+@media (max-width: 380px) {
+  .rdp-santelmo {
+    --rdp-day-height: 34px;
+    --rdp-day-width: 34px;
+    --rdp-day_button-height: 31px;
+    --rdp-day_button-width: 31px;
+  }
+}

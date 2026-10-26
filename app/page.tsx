@@ -10,21 +10,24 @@ import Experience from "@/components/Experience";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 export default function Home() {
   const [selectedRoom, setSelectedRoom] = useState<string | undefined>();
 
   return (
-    <main>
-      <Navbar />
-      <Hero />
-      <About />
-      <Gallery />
-      <Rooms onSelectRoom={setSelectedRoom} />
-      <Experience />
-      <BookingSection preselectedRoom={selectedRoom} />
-      <Footer />
-      <WhatsAppButton />
-    </main>
+    <LanguageProvider>
+      <main>
+        <Navbar />
+        <Hero />
+        <About />
+        <Gallery />
+        <Rooms onSelectRoom={setSelectedRoom} />
+        <Experience />
+        <BookingSection preselectedRoom={selectedRoom} />
+        <Footer />
+        <WhatsAppButton />
+      </main>
+    </LanguageProvider>
   );
 }

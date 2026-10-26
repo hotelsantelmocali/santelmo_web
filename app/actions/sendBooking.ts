@@ -1,9 +1,12 @@
 "use server";
 
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { Resend } from "resend";
 import { z } from "zod";
 import { format, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
+import { siteConfig } from "@/config/site";
 
 const bookingSchema = z.object({
   checkIn: z.coerce.date(),
@@ -83,13 +86,13 @@ function buildHtmlEmail(data: BookingData): string {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0b08;padding:32px 0;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1a1510;border:1px solid #2e2720;max-width:600px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#1a1510;border:1px solid #2e2720;">
 
           <!-- Header -->
           <tr>
-            <td style="background:linear-gradient(135deg,#1a1208,#221d16);padding:32px;text-align:center;border-bottom:2px solid #c9a84c;">
-              <p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#c9a84c;letter-spacing:0.3em;text-transform:uppercase;">SANTELMO</p>
-              <p style="margin:0;font-size:10px;letter-spacing:0.5em;color:#a89880;text-transform:uppercase;">Hotel · Cali, Colombia</p>
+            <td style="background:#17120c;padding:28px 20px;text-align:center;border-bottom:2px solid #c9a84c;">
+              <img src="cid:hotel-santelmo-logo" alt="Hotel Santelmo" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin:0 auto 16px;">
+              <p style="margin:0;font-size:11px;letter-spacing:0.3em;color:#d4c7ad;text-transform:uppercase;">Cali, Colombia</p>
             </td>
           </tr>
 
@@ -108,9 +111,9 @@ function buildHtmlEmail(data: BookingData): string {
                 <tr>
                   <td style="background:#221d16;border-left:3px solid #c9a84c;padding:20px;margin-bottom:16px;">
                     <p style="margin:0 0 12px;font-size:11px;letter-spacing:0.3em;color:#c9a84c;text-transform:uppercase;">Datos del Huésped</p>
-                    <p style="margin:0 0 6px;color:#f5f0e8;font-size:15px;font-weight:700;">${name}</p>
-                    <p style="margin:0 0 4px;color:#a89880;font-size:13px;">📧 ${email}</p>
-                    <p style="margin:0;color:#a89880;font-size:13px;">📱 ${phone}</p>
+                          <p style="margin:0 0 8px;color:#f5f0e8;font-size:17px;font-weight:700;">${name}</p>
+                          <p style="margin:0 0 6px;color:#a89880;font-size:13px;">Correo: <a href="mailto:${email}" style="color:#d4c7ad;text-decoration:none;">${email}</a></p>
+                          <p style="margin:0;color:#a89880;font-size:13px;">Teléfono: <a href="tel:${phone}" style="color:#d4c7ad;text-decoration:none;">${phone}</a></p>
                   </td>
                 </tr>
               </table>
@@ -158,10 +161,12 @@ function buildHtmlEmail(data: BookingData): string {
           <!-- Comments -->
           <tr>
             <td style="padding:0 32px 24px;">
-              <div style="background:#221d16;border-left:3px solid #c9a84c;padding:16px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#221d16;border-left:3px solid #c9a84c;">
+                <tr><td style="padding:16px;">
                 <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.3em;color:#c9a84c;text-transform:uppercase;">Peticiones Especiales</p>
-                <p style="margin:0;color:#a89880;font-size:13px;line-height:1.6;">${comments}</p>
-              </div>
+                <p style="margin:0;color:#a89880;font-size:13px;line-height:1.6;white-space:pre-line;">${comments}</p>
+                </td></tr>
+              </table>
             </td>
           </tr>`
               : ""
@@ -186,7 +191,9 @@ function buildHtmlEmail(data: BookingData): string {
           <!-- Footer -->
           <tr>
             <td style="background:#0d0b08;border-top:1px solid #2e2720;padding:16px 32px;text-align:center;">
-              <p style="margin:0;font-size:11px;color:#6b5e4e;">Hotel Santelmo · Cali, Colombia · hoteltelimocali@gmail.com</p>
+              <p style="margin:0;font-size:11px;color:#a89880;">${siteConfig.name} · Cali, Colombia</p>
+              <p style="margin:4px 0 0;font-size:11px;"><a href="mailto:${siteConfig.email}" style="color:#c9a84c;text-decoration:none;">${siteConfig.email}</a></p>
+              <p style="margin:4px 0 0;font-size:10px;color:#6b5e4e;">${siteConfig.address}</p>
               <p style="margin:4px 0 0;font-size:10px;color:#3d3530;">Este correo fue generado automáticamente desde el formulario de reservas del sitio web.</p>
             </td>
           </tr>
@@ -223,6 +230,9 @@ export async function sendBooking(
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
+    const logo = await readFile(
+      path.join(process.cwd(), "public", "images", "logo-on-dark-background.png")
+    );
     const { error } = await resend.emails.send({
       from: `Hotel Santelmo <${fromEmail}>`,
       to: [adminEmail],
@@ -231,6 +241,14 @@ export async function sendBooking(
         format(validated.checkIn, "d MMM yyyy", { locale: es })
       }`,
       html: buildHtmlEmail(validated),
+      attachments: [
+        {
+          filename: "hotel-santelmo-logo.png",
+          content: logo,
+          contentType: "image/png",
+          contentId: "hotel-santelmo-logo",
+        },
+      ],
     });
 
     if (error) {

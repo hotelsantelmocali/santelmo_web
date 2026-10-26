@@ -4,8 +4,20 @@ import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import BrandLogo from "./BrandLogo";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { TranslationKey } from "@/i18n/translations";
+
+const navTranslationKeys: Record<string, TranslationKey> = {
+  "#inicio": "nav.home",
+  "#nosotros": "nav.about",
+  "#habitaciones": "nav.rooms",
+  "#servicios": "nav.services",
+  "#reserva": "nav.booking",
+};
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer
       id="contacto"
@@ -19,7 +31,7 @@ export default function Footer() {
               <BrandLogo className="h-auto w-40" />
             </div>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
-              {siteConfig.tagline}
+              {t("footer.tagline")}
             </p>
             <div className="flex gap-4">
               <motion.a
@@ -37,7 +49,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-xs tracking-[0.4em] uppercase text-[var(--gold)] mb-5">
-              Navegación
+              {t("footer.navigation")}
             </h3>
             <ul className="space-y-3">
               {siteConfig.navLinks.map((link) => (
@@ -49,7 +61,7 @@ export default function Footer() {
                     }}
                     className="text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors tracking-wide"
                   >
-                    {link.label}
+                    {t(navTranslationKeys[link.href])}
                   </button>
                 </li>
               ))}
@@ -59,7 +71,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h3 className="text-xs tracking-[0.4em] uppercase text-[var(--gold)] mb-5">
-              Contacto
+              {t("footer.contact")}
             </h3>
             <div className="space-y-4">
               {siteConfig.contactPhones.map((phone) => (
@@ -93,10 +105,10 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
           <p>
-            © {siteConfig.name}. Todos los derechos reservados.
+            © {siteConfig.name}. {t("footer.rights")}
           </p>
           <p>
-            Las solicitudes están sujetas a disponibilidad y confirmación del hotel.
+            {t("footer.availability")}
           </p>
         </div>
       </div>

@@ -14,6 +14,8 @@ import {
   Users,
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { TranslationKey } from "@/i18n/translations";
 
 const iconMap: Record<string, React.ElementType> = {
   Wifi,
@@ -28,28 +30,46 @@ const iconMap: Record<string, React.ElementType> = {
   Users,
 };
 
-const experienceItems = [
+const experienceItems: {
+  icon: string;
+  title: TranslationKey;
+  subtitle: TranslationKey;
+  description: TranslationKey;
+}[] = [
   {
     icon: "Users",
-    title: "Grupos",
-    subtitle: "Espacio para compartir",
-    description: "Recibimos equipos deportivos, empresas, familias, grupos escolares y agrupaciones musicales.",
+    title: "experience.groups.title",
+    subtitle: "experience.groups.subtitle",
+    description: "experience.groups.description",
   },
   {
     icon: "MapPin",
-    title: "Ubicación",
-    subtitle: "Zona rosa del sur de Cali",
-    description: "Hospédate en el barrio Gran Limonar, con conexión a espacios deportivos y comerciales de la ciudad.",
+    title: "experience.location.title",
+    subtitle: "experience.location.subtitle",
+    description: "experience.location.description",
   },
   {
     icon: "Utensils",
-    title: "Restaurante",
-    subtitle: "Y terraza rooftop",
-    description: "Disfruta desayuno americano y la vista de Cali desde nuestra terraza. Almuerzo y cena disponibles con costo adicional.",
+    title: "experience.restaurant.title",
+    subtitle: "experience.restaurant.subtitle",
+    description: "experience.restaurant.description",
   },
 ];
 
 export default function Experience() {
+  const { t } = useLanguage();
+  const serviceTranslationKeys: [TranslationKey, TranslationKey][] = [
+    ["services.restaurant.title", "services.restaurant.description"],
+    ["services.reception.title", "services.reception.description"],
+    ["services.wifi.title", "services.wifi.description"],
+    ["services.laundry.title", "services.laundry.description"],
+    ["services.airport.title", "services.airport.description"],
+    ["services.housekeeping.title", "services.housekeeping.description"],
+    ["services.discount.title", "services.discount.description"],
+    ["services.special.title", "services.special.description"],
+    ["services.rooftop.title", "services.rooftop.description"],
+  ];
+
   return (
     <>
       {/* Experience Section */}
@@ -74,7 +94,7 @@ export default function Experience() {
               viewport={{ once: true }}
               className="text-xs tracking-[0.5em] uppercase text-[var(--gold)] font-semibold block mb-4"
             >
-              Atención pensada para tu estadía
+              {t("experience.eyebrow")}
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -83,7 +103,7 @@ export default function Experience() {
               transition={{ duration: 0.7 }}
               className="font-display text-4xl lg:text-5xl font-bold text-white mb-3"
             >
-              UN HOTEL PARA GRUPOS
+              {t("experience.title")}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0 }}
@@ -92,7 +112,7 @@ export default function Experience() {
               transition={{ delay: 0.15 }}
               className="text-[var(--text-secondary)] tracking-widest uppercase text-sm"
             >
-              18 años recibiendo visitantes en Cali
+              {t("experience.subtitle")}
             </motion.p>
             <motion.div
               initial={{ width: 0 }}
@@ -121,10 +141,10 @@ export default function Experience() {
                     <Icon className="w-6 h-6" style={{ color: "var(--gold)" }} />
                   </div>
                   <h3 className="font-display text-2xl font-bold text-[var(--gold)] tracking-widest uppercase mb-1">
-                    {item.title}
+                    {t(item.title)}
                   </h3>
-                  <p className="text-xs text-white font-semibold tracking-wide mb-3 uppercase">{item.subtitle}</p>
-                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{item.description}</p>
+                  <p className="text-xs text-white font-semibold tracking-wide mb-3 uppercase">{t(item.subtitle)}</p>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{t(item.description)}</p>
                 </motion.div>
               );
             })}
@@ -142,7 +162,7 @@ export default function Experience() {
               viewport={{ once: true }}
               className="text-xs tracking-[0.5em] uppercase text-[var(--gold)] font-semibold block mb-4"
             >
-              Servicios del hotel
+              {t("services.eyebrow")}
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -150,7 +170,7 @@ export default function Experience() {
               viewport={{ once: true }}
               className="font-display text-4xl lg:text-5xl font-bold text-white mb-4"
             >
-              Servicios y experiencias
+              {t("services.title")}
             </motion.h2>
             <motion.div
               initial={{ width: 0 }}
@@ -164,9 +184,10 @@ export default function Experience() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {siteConfig.services.map((s, i) => {
               const Icon = iconMap[s.icon];
+              const [titleKey, descriptionKey] = serviceTranslationKeys[i];
               return (
                 <motion.div
-                  key={s.label}
+                  key={titleKey}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -177,8 +198,8 @@ export default function Experience() {
                   <div className="w-12 h-12 flex items-center justify-center mb-3 border border-[var(--dark-border)] group-hover:border-[var(--gold)]/50 transition-colors">
                     <Icon className="w-5 h-5 transition-colors group-hover:text-[var(--gold)]" style={{ color: "var(--text-muted)" }} />
                   </div>
-                  <h3 className="text-sm font-semibold text-white mb-1">{s.label}</h3>
-                  <p className="text-xs text-[var(--text-muted)]">{s.description}</p>
+                  <h3 className="text-sm font-semibold text-white mb-1">{t(titleKey)}</h3>
+                  <p className="text-xs text-[var(--text-muted)]">{t(descriptionKey)}</p>
                 </motion.div>
               );
             })}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format, startOfToday } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es, ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,41 +27,72 @@ import {
 } from "lucide-react";
 import { sendBooking } from "@/app/actions/sendBooking";
 import { siteConfig } from "@/config/site";
-import "react-day-picker/dist/style.css";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { TranslationKey } from "@/i18n/translations";
+import "react-day-picker/style.css";
 
-const bookingSchema = z.object({
-  checkIn: z.date().optional(),
-  checkOut: z.date().optional(),
-  adults: z.number().min(1, "Al menos 1 adulto").max(10).default(2),
-  children: z.number().min(0).max(10).default(0),
-  roomType: z.string().optional().default("Indiferente"),
-  name: z.string().min(3, "Nombre mínimo 3 caracteres").max(100),
-  phone: z
-    .string()
-    .trim()
-    .min(7, "Teléfono requerido")
-    .max(20)
-    .regex(/^\+\d[\d\s().-]{6,18}$/, "Incluye el código de país, por ejemplo +57"),
-  email: z.string().email("Correo electrónico inválido"),
-  comments: z.string().optional(),
-});
+const roomNames: Record<string, TranslationKey> = {
+  "habitacion-sencilla": "rooms.single.name",
+  "habitacion-parejas": "rooms.couple.name",
+  "acomodacion-multiple": "rooms.multiple.name",
+};
 
-type BookingFormData = z.infer<typeof bookingSchema>;
+function createBookingSchema(t: (key: TranslationKey) => string) {
+  return z
+    .object({
+      checkIn: z.date().optional(),
+      checkOut: z.date().optional(),
+      adults: z.number().min(1, t("form.adultsRequired")).max(10).default(2),
+      children: z.number().min(0).max(10).default(0),
+      roomType: z.string().optional().default("indifferent"),
+      name: z.string().trim().min(3, t("form.nameMin")).max(100),
+      phone: z
+        .string()
+        .trim()
+        .min(7, t("form.phoneRequired"))
+        .max(20)
+        .regex(/^\+\d[\d\s().-]{6,18}$/, t("form.phoneCountry")),
+      email: z.string().email(t("form.emailInvalid")),
+      comments: z.string().max(2000).optional(),
+    })
+    .superRefine((booking, context) => {
+      if (booking.checkIn && booking.checkIn < startOfToday()) {
+        context.addIssue({
+          code: "custom",
+          path: ["checkIn"],
+          message: t("form.datePast"),
+        });
+      }
+
+      if (booking.checkIn && booking.checkOut && booking.checkOut <= booking.checkIn) {
+        context.addIssue({
+          code: "custom",
+          path: ["checkOut"],
+          message: t("form.dateOrder"),
+        });
+      }
+    });
+}
+
+type BookingFormData = z.infer<ReturnType<typeof createBookingSchema>>;
+type BookingFormInput = z.input<ReturnType<typeof createBookingSchema>>;
 
 interface BookingFormProps {
   preselectedRoom?: string;
 }
 
-const roomOptions = ["Indiferente", ...siteConfig.rooms.map((room) => room.name)];
-
 function Counter({
   label,
+  decreaseLabel,
+  increaseLabel,
   value,
   onChange,
   min = 0,
   max = 10,
 }: {
   label: string;
+  decreaseLabel: string;
+  increaseLabel: string;
   value: number;
   onChange: (v: number) => void;
   min?: number;
@@ -75,7 +106,7 @@ function Counter({
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
           disabled={value <= min}
-          aria-label={`Disminuir ${label.toLowerCase()}`}
+          aria-label={decreaseLabel}
           className="w-8 h-8 flex items-center justify-center border border-[var(--dark-border)] text-[var(--gold)] hover:border-[var(--gold)] disabled:opacity-30 transition-colors"
         >
           <Minus className="w-3 h-3" />
@@ -85,7 +116,7 @@ function Counter({
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
-          aria-label={`Aumentar ${label.toLowerCase()}`}
+          aria-label={increaseLabel}
           className="w-8 h-8 flex items-center justify-center border border-[var(--dark-border)] text-[var(--gold)] hover:border-[var(--gold)] disabled:opacity-30 transition-colors"
         >
           <Plus className="w-3 h-3" />
@@ -96,6 +127,9 @@ function Counter({
 }
 
 export default function BookingForm({ preselectedRoom }: BookingFormProps) {
+  const { language, t } = useLanguage();
+  const calendarDialogRef = useRef<HTMLDivElement>(null);
+  const calendarScrollTimeoutRef = useRef<number | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [isRoomOpen, setIsRoomOpen] = useState(false);
@@ -104,6 +138,15 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState<BookingFormData | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const bookingSchema = useMemo(() => createBookingSchema(t), [t]);
+  const dateLocale = { es, en: enUS, pt: ptBR }[language];
+  const roomOptions = [
+    { id: "indifferent", label: t("form.roomAny") },
+    ...siteConfig.rooms.map((room) => ({
+      id: room.id,
+      label: t(roomNames[room.id]),
+    })),
+  ];
 
   const {
     register,
@@ -111,12 +154,12 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
     control,
     setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<BookingFormInput, undefined, BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       adults: 2,
       children: 0,
-      roomType: preselectedRoom ?? "Indiferente",
+      roomType: preselectedRoom ?? "indifferent",
       name: "",
       phone: "",
       email: "",
@@ -126,13 +169,56 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
 
   const adults = useWatch({ control, name: "adults" }) ?? 2;
   const children = useWatch({ control, name: "children" }) ?? 0;
-  const selectedRoom = useWatch({ control, name: "roomType" }) ?? "Indiferente";
+  const selectedRoom = useWatch({ control, name: "roomType" }) ?? "indifferent";
 
   useEffect(() => {
     if (preselectedRoom) {
       setValue("roomType", preselectedRoom);
     }
   }, [preselectedRoom, setValue]);
+
+  useEffect(() => {
+    return () => {
+      if (calendarScrollTimeoutRef.current !== null) {
+        window.clearTimeout(calendarScrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const toggleCalendar = () => {
+    if (calendarScrollTimeoutRef.current !== null) {
+      window.clearTimeout(calendarScrollTimeoutRef.current);
+      calendarScrollTimeoutRef.current = null;
+    }
+
+    if (isCalendarOpen) {
+      setIsCalendarOpen(false);
+      return;
+    }
+
+    setToday(startOfToday());
+    setIsCalendarOpen(true);
+    calendarScrollTimeoutRef.current = window.setTimeout(() => {
+      const dialog = calendarDialogRef.current;
+      if (!dialog) return;
+
+      const dialogRect = dialog.getBoundingClientRect();
+      const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 72;
+      const safeTop = Math.max(72, headerHeight + 12);
+      const safeBottom = 24;
+      const centeredTop =
+        safeTop +
+        Math.max(0, (window.innerHeight - safeTop - safeBottom - dialogRect.height) / 2);
+
+      window.scrollTo({
+        top: Math.max(0, window.scrollY + dialogRect.top - centeredTop),
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+      });
+      calendarScrollTimeoutRef.current = null;
+    }, 260);
+  };
 
   const handleDateSelect = (range: DateRange | undefined) => {
     setDateRange(range);
@@ -141,14 +227,14 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
   };
 
   const formatDateRange = () => {
-    if (!dateRange?.from) return "Seleccionar fechas";
-    if (!dateRange.to) return format(dateRange.from, "d MMM yyyy", { locale: es });
-    return `${format(dateRange.from, "d MMM yyyy", { locale: es })} — ${format(dateRange.to, "d MMM yyyy", { locale: es })}`;
+    if (!dateRange?.from) return t("form.selectDates");
+    if (!dateRange.to) return format(dateRange.from, "d MMM yyyy", { locale: dateLocale });
+    return `${format(dateRange.from, "d MMM yyyy", { locale: dateLocale })} — ${format(dateRange.to, "d MMM yyyy", { locale: dateLocale })}`;
   };
 
   const onSubmit = async (data: BookingFormData) => {
     if (!data.checkIn || !data.checkOut) {
-      setSubmitError("Selecciona las fechas de llegada y salida.");
+      setSubmitError(t("form.selectDateError"));
       return;
     }
 
@@ -159,30 +245,30 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
         ...data,
         checkIn: data.checkIn,
         checkOut: data.checkOut,
+        roomType: roomOptions.find((room) => room.id === data.roomType)?.label ?? t("form.roomAny"),
       });
       if (result.success) {
         setFormData({ ...data, checkIn: data.checkIn, checkOut: data.checkOut });
         setIsSuccess(true);
       } else {
-        setSubmitError(result.error || "Error al enviar. Inténtalo de nuevo.");
+        setSubmitError(t("form.submitError"));
       }
     } catch {
-      setSubmitError("Error de conexión. Inténtalo de nuevo.");
+      setSubmitError(t("form.connectionError"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const buildWhatsAppUrl = (data: BookingFormData) => {
-    const ci = data.checkIn ? format(data.checkIn, "d MMM yyyy", { locale: es }) : "N/A";
-    const co = data.checkOut ? format(data.checkOut, "d MMM yyyy", { locale: es }) : "N/A";
+    const ci = data.checkIn ? format(data.checkIn, "d MMM yyyy", { locale: dateLocale }) : "";
+    const co = data.checkOut ? format(data.checkOut, "d MMM yyyy", { locale: dateLocale }) : "";
+    const room = roomOptions.find((option) => option.id === data.roomType)?.label ?? t("form.roomAny");
     const msg = encodeURIComponent(
-      `Hola Hotel Santelmo! 👋\n\n*Solicitud de Reserva*\n\n` +
-        `📅 Llegada: ${ci}\n📅 Salida: ${co}\n` +
-        `👥 Huéspedes: ${data.adults} adulto(s), ${data.children} niño(s)\n` +
-        `🛏️ Habitación: ${data.roomType}\n\n` +
-        `👤 Nombre: ${data.name}\n📧 Email: ${data.email}\n📱 Tel: ${data.phone}\n` +
-        (data.comments ? `\n💬 Peticiones: ${data.comments}` : "")
+      `${t("whatsapp.message")}\n\n${t("form.dates")}: ${ci} — ${co}\n` +
+        `${t("form.guests")}: ${data.adults} · ${t("form.children")}: ${data.children}\n` +
+        `${t("form.room")}: ${room}\n\n${data.name}\n${data.email}\n${data.phone}` +
+        (data.comments ? `\n${data.comments}` : "")
     );
     const num = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+573187351317").replace(/[^0-9]/g, "");
     return `https://wa.me/${num}?text=${msg}`;
@@ -203,23 +289,25 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
         >
           <CheckCircle className="w-10 h-10" style={{ color: "var(--gold)" }} />
         </motion.div>
-        <h3 className="font-display text-3xl font-bold text-white mb-3">¡Solicitud Enviada!</h3>
+        <h3 className="font-display text-3xl font-bold text-white mb-3">{t("form.successTitle")}</h3>
         <p className="text-[var(--text-secondary)] mb-2">
-          Gracias, <span className="text-white font-semibold">{formData.name}</span>.
+          {t("form.thanks")} <span className="text-white font-semibold">{formData.name}</span>.
         </p>
         <p className="text-[var(--text-secondary)] text-sm mb-8">
-          Hemos recibido tu solicitud y nos pondremos en contacto contigo a la brevedad posible al correo{" "}
+          {t("form.successBody")}{" "}
           <span className="text-[var(--gold)]">{formData.email}</span>.
         </p>
         <div className="p-4 bg-[var(--dark-card)] border border-[var(--dark-border)] text-sm text-left mb-6 space-y-1">
           <p className="text-[var(--text-muted)]">
-            📅 {formData.checkIn ? format(formData.checkIn, "d MMM yyyy", { locale: es }) : "N/A"} →{" "}
-            {formData.checkOut ? format(formData.checkOut, "d MMM yyyy", { locale: es }) : "N/A"}
+            📅 {formData.checkIn ? format(formData.checkIn, "d MMM yyyy", { locale: dateLocale }) : ""} →{" "}
+            {formData.checkOut ? format(formData.checkOut, "d MMM yyyy", { locale: dateLocale }) : ""}
           </p>
           <p className="text-[var(--text-muted)]">
-            👥 {formData.adults} adulto(s), {formData.children} niño(s)
+            👥 {formData.adults} {t("form.adults").toLowerCase()}, {formData.children} {t("form.children").toLowerCase()}
           </p>
-          <p className="text-[var(--text-muted)]">🛏️ {formData.roomType}</p>
+          <p className="text-[var(--text-muted)]">
+            🛏️ {roomOptions.find((room) => room.id === formData.roomType)?.label ?? t("form.roomAny")}
+          </p>
         </div>
         <motion.a
           href={buildWhatsAppUrl(formData)}
@@ -230,7 +318,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
           className="flex items-center justify-center gap-3 w-full py-4 bg-[#25D366] text-white font-bold tracking-wide text-sm"
         >
           <MessageCircle className="w-5 h-5" />
-          Confirmar más rápido por WhatsApp
+          {t("form.whatsappConfirm")}
         </motion.a>
       </motion.div>
     );
@@ -241,17 +329,14 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
       {/* Date Range Picker */}
       <div className="relative">
         <label className="text-xs tracking-widest uppercase text-[var(--text-muted)] block mb-2">
-          Fechas de Estancia
+          {t("form.dates")}
         </label>
         <button
           type="button"
-          onClick={() => {
-            setToday(startOfToday());
-            setIsCalendarOpen((v) => !v);
-          }}
+          onClick={toggleCalendar}
           aria-haspopup="dialog"
           aria-expanded={isCalendarOpen}
-          aria-label={`Fechas de estancia: ${formatDateRange()}`}
+          aria-label={t("form.datePickerAria", { dates: formatDateRange() })}
           className={`w-full flex items-center justify-between px-4 py-3.5 border text-left transition-colors ${
             errors.checkIn || errors.checkOut
               ? "border-red-500/50"
@@ -269,20 +354,21 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
         <AnimatePresence>
           {isCalendarOpen && (
             <motion.div
+              ref={calendarDialogRef}
               initial={{ opacity: 0, y: 8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.97 }}
               transition={{ duration: 0.2 }}
               className="absolute top-full left-0 mt-2 z-50 glass-dark border border-[var(--gold)]/30 p-3 shadow-2xl"
               role="dialog"
-              aria-label="Seleccionar fechas de estancia"
+              aria-label={t("form.datePickerLabel")}
               onKeyDown={(event) => {
                 if (event.key === "Escape") setIsCalendarOpen(false);
               }}
             >
               <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-[var(--gold)] tracking-widest uppercase">Seleccionar Rango</span>
-                <button type="button" onClick={() => setIsCalendarOpen(false)}>
+                <span className="text-xs text-[var(--gold)] tracking-widest uppercase">{t("form.selectRange")}</span>
+                <button type="button" aria-label={t("form.closeCalendar")} onClick={() => setIsCalendarOpen(false)}>
                   <X className="w-4 h-4 text-[var(--text-muted)] hover:text-white" />
                 </button>
               </div>
@@ -290,19 +376,13 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
                 mode="range"
                 selected={dateRange}
                 onSelect={handleDateSelect}
-                locale={es}
+                locale={dateLocale}
+                navLayout="around"
+                showOutsideDays
                 disabled={today ? { before: today } : undefined}
                 defaultMonth={today ?? undefined}
                 numberOfMonths={1}
-                classNames={{
-                  root: "rdp-santelmo",
-                  selected: "!bg-[var(--gold)] !text-[var(--dark-bg)]",
-                  range_middle: "!bg-[var(--gold)]/20 !text-[var(--gold)]",
-                  range_start: "!bg-[var(--gold)] !text-[var(--dark-bg)]",
-                  range_end: "!bg-[var(--gold)] !text-[var(--dark-bg)]",
-                  today: "!border !border-[var(--gold)]/60",
-                  disabled: "!opacity-25 !cursor-not-allowed",
-                }}
+                className="rdp-santelmo"
               />
               {dateRange?.from && dateRange?.to && (
                 <motion.button
@@ -312,14 +392,14 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
                   onClick={() => setIsCalendarOpen(false)}
                   className="w-full mt-2 py-2 bg-[var(--gold)] text-[var(--dark-bg)] text-xs font-bold tracking-widest uppercase"
                 >
-                  Confirmar Fechas
+                  {t("form.confirmDates")}
                 </motion.button>
               )}
             </motion.div>
           )}
         </AnimatePresence>
         {(errors.checkIn || errors.checkOut) && (
-          <p className="text-xs text-red-400 mt-1">Selecciona fechas de llegada y salida</p>
+          <p className="text-xs text-red-400 mt-1">{t("form.guestError")}</p>
         )}
       </div>
 
@@ -327,18 +407,22 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
       <div>
         <label className="text-xs tracking-widest uppercase text-[var(--text-muted)] block mb-2 flex items-center gap-2">
           <Users className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
-          Huéspedes
+          {t("form.guests")}
         </label>
         <div className="border border-[var(--dark-border)] p-4 bg-[var(--dark-card)] space-y-3">
           <Counter
-            label="Adultos"
+            label={t("form.adults")}
+            decreaseLabel={t("form.decrease", { label: t("form.adults").toLowerCase() })}
+            increaseLabel={t("form.increase", { label: t("form.adults").toLowerCase() })}
             value={adults}
             onChange={(v) => setValue("adults", v)}
             min={1}
           />
           <div className="h-px bg-[var(--dark-border)]" />
           <Counter
-            label="Niños"
+            label={t("form.children")}
+            decreaseLabel={t("form.decrease", { label: t("form.children").toLowerCase() })}
+            increaseLabel={t("form.increase", { label: t("form.children").toLowerCase() })}
             value={children}
             onChange={(v) => setValue("children", v)}
           />
@@ -350,7 +434,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
       <div className="relative">
         <label className="text-xs tracking-widest uppercase text-[var(--text-muted)] block mb-2 flex items-center gap-2">
           <BedDouble className="w-3.5 h-3.5" style={{ color: "var(--gold)" }} />
-          Tipo de Habitación (Opcional)
+          {t("form.room")}
         </label>
         <button
           type="button"
@@ -375,17 +459,17 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
             >
               {roomOptions.map((opt) => (
                 <button
-                  key={opt}
+                  key={opt.id}
                   type="button"
                   onClick={() => {
-                    setValue("roomType", opt);
+                    setValue("roomType", opt.id);
                     setIsRoomOpen(false);
                   }}
                   className={`w-full text-left px-4 py-3 text-sm transition-colors hover:bg-[var(--gold)]/10 ${
-                    selectedRoom === opt ? "text-[var(--gold)]" : "text-[var(--text-secondary)]"
+                    selectedRoom === opt.id ? "text-[var(--gold)]" : "text-[var(--text-secondary)]"
                   }`}
                 >
-                  {opt}
+                  {opt.label}
                 </button>
               ))}
             </motion.div>
@@ -396,7 +480,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
       {/* Personal Data */}
       <div className="space-y-4">
         <label className="text-xs tracking-widest uppercase text-[var(--text-muted)] block">
-          Datos de Contacto
+          {t("form.contactDetails")}
         </label>
 
         {/* Name */}
@@ -408,7 +492,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
               id="booking-name"
               autoComplete="name"
               aria-invalid={Boolean(errors.name)}
-              placeholder="Nombre completo *"
+              placeholder={t("form.name")}
               className={`w-full pl-11 pr-4 py-3.5 bg-[var(--dark-card)] border text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--gold)] transition-colors ${
                 errors.name ? "border-red-500/50" : "border-[var(--dark-border)]"
               }`}
@@ -426,7 +510,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
               id="booking-phone"
               autoComplete="tel"
               aria-invalid={Boolean(errors.phone)}
-              placeholder="Teléfono / WhatsApp (ej. +57 318...) *"
+              placeholder={t("form.phone")}
               type="tel"
               className={`w-full pl-11 pr-4 py-3.5 bg-[var(--dark-card)] border text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--gold)] transition-colors ${
                 errors.phone ? "border-red-500/50" : "border-[var(--dark-border)]"
@@ -445,7 +529,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
               id="booking-email"
               autoComplete="email"
               aria-invalid={Boolean(errors.email)}
-              placeholder="Correo electrónico *"
+              placeholder={t("form.email")}
               type="email"
               className={`w-full pl-11 pr-4 py-3.5 bg-[var(--dark-card)] border text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--gold)] transition-colors ${
                 errors.email ? "border-red-500/50" : "border-[var(--dark-border)]"
@@ -458,7 +542,7 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
         {/* Comments */}
         <textarea
           {...register("comments")}
-          placeholder="Peticiones especiales, comentarios... (opcional)"
+          placeholder={t("form.comments")}
           rows={3}
           className="w-full px-4 py-3.5 bg-[var(--dark-card)] border border-[var(--dark-border)] text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--gold)] transition-colors resize-none"
         />
@@ -486,18 +570,18 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Enviando...
+            {t("form.submitting")}
           </>
         ) : (
           <>
             <Send className="w-4 h-4" />
-            Verificar Disponibilidad
+            {t("form.submit")}
           </>
         )}
       </motion.button>
 
       <p className="text-xs text-center text-[var(--text-muted)]">
-        Sin cargos. Te contactaremos para confirmar tu reserva.
+        {t("form.noCharge")}
       </p>
     </form>
   );

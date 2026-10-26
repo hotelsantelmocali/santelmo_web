@@ -3,11 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { siteConfig } from "@/config/site";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 export default function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(false);
+  const { t } = useLanguage();
   const num = (siteConfig.whatsapp || "+573187351317").replace(/[^0-9]/g, "");
-  const msg = encodeURIComponent("Hola Hotel Santelmo! 👋 Me gustaría obtener información sobre disponibilidad y tarifas.");
+  const msg = encodeURIComponent(t("whatsapp.message"));
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -21,7 +23,7 @@ export default function WhatsAppButton() {
             transition={{ duration: 0.2 }}
             className="glass-dark border border-[#25D366]/30 px-4 py-2 text-xs text-white whitespace-nowrap"
           >
-            💬 Chatea con nosotros
+            💬 {t("whatsapp.tooltip")}
           </motion.div>
         )}
       </AnimatePresence>
@@ -39,7 +41,7 @@ export default function WhatsAppButton() {
           onHoverEnd={() => setShowTooltip(false)}
           whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.95 }}
-          aria-label="Contactar por WhatsApp"
+          aria-label={t("whatsapp.aria")}
           className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] rounded-full shadow-lg hover:bg-[#20ba5c] transition-colors"
           style={{ boxShadow: "0 4px 20px rgba(37, 211, 102, 0.4)" }}
         >

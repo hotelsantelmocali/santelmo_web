@@ -22,6 +22,19 @@ Los datos visibles, habitaciones, navegación, contacto y SEO se centralizan en
 [`config/site.ts`](./config/site.ts). Las imágenes optimizadas se encuentran en
 `public/images/`; reemplázalas manteniendo los nombres o actualiza sus rutas.
 
+## Idiomas y calendario
+
+El sitio ofrece español, inglés y portugués. Las traducciones están en
+[`i18n/translations.ts`](./i18n/translations.ts) y la selección se conserva en
+el navegador. Actualmente los idiomas cambian el contenido en la misma URL;
+para posicionar páginas independientes por idioma habrá que añadir rutas y
+metadatos localizados.
+
+El selector de fechas utiliza React DayPicker v10. Su tema está en
+[`app/globals.css`](./app/globals.css), bajo `.rdp-root.rdp-santelmo`; allí se
+pueden ajustar las variables `--rdp-*` y las reglas de color, tamaño, bordes y
+estados de las fechas.
+
 ## Comprobaciones
 
 - `npm run lint`

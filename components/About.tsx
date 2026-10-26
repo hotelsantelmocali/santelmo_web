@@ -4,12 +4,13 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Award, BedDouble, Clock } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const stats = [
-  { icon: Award, value: "18", label: "Años de experiencia" },
-  { icon: BedDouble, value: "14", label: "Habitaciones" },
-  { icon: Clock, value: "24/7", label: "Recepción" },
-];
+  { icon: Award, value: "18", label: "about.stat.years" },
+  { icon: BedDouble, value: "14", label: "about.stat.rooms" },
+  { icon: Clock, value: "24/7", label: "about.stat.reception" },
+] as const;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -21,6 +22,7 @@ const fadeUp = {
 };
 
 export default function About() {
+  const { t } = useLanguage();
   return (
     <section id="nosotros" className="section-padding bg-[var(--dark-surface)] relative overflow-hidden">
       {/* Decorative gradient blob */}
@@ -40,7 +42,7 @@ export default function About() {
             <div className="relative aspect-[4/5] overflow-hidden">
               <Image
                 src="/images/lobby.jpg"
-                alt="Espacios del Hotel Santelmo en Cali"
+                alt={t("about.alt")}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
@@ -60,8 +62,8 @@ export default function About() {
               transition={{ delay: 0.5, duration: 0.5 }}
               className="absolute -bottom-6 left-6 glass-dark px-6 py-4 border border-[var(--gold)]/30"
             >
-              <span className="text-[var(--gold)] font-display text-2xl font-bold block">18 años</span>
-              <span className="text-xs text-[var(--text-secondary)] tracking-widest uppercase">Recibiendo a Cali</span>
+              <span className="text-[var(--gold)] font-display text-2xl font-bold block">{t("about.years")}</span>
+              <span className="text-xs text-[var(--text-secondary)] tracking-widest uppercase">{t("about.welcome")}</span>
             </motion.div>
           </motion.div>
 
@@ -75,7 +77,7 @@ export default function About() {
               viewport={{ once: true }}
             >
               <span className="text-xs tracking-[0.4em] uppercase text-[var(--gold)] font-semibold">
-                Hotel Santelmo
+                {t("about.eyebrow")}
               </span>
             </motion.div>
 
@@ -87,8 +89,8 @@ export default function About() {
               viewport={{ once: true }}
               className="font-display text-4xl lg:text-5xl font-bold text-white leading-tight"
             >
-              Un lugar cómodo para{" "}
-              <span className="text-[var(--gold)]">vivir Cali en grupo</span>
+              {t("about.title.first")}{" "}
+              <span className="text-[var(--gold)]">{t("about.title.highlight")}</span>
             </motion.h2>
 
             <motion.div
@@ -108,7 +110,7 @@ export default function About() {
               viewport={{ once: true }}
               className="text-[var(--text-secondary)] leading-relaxed"
             >
-              Con 18 años de experiencia, Hotel Santelmo se especializa en recibir equipos deportivos, empresas, familias, grupos escolares y agrupaciones musicales. Ponemos a disposición 14 habitaciones, atención cercana y servicios pensados para que cada grupo disfrute su visita a Cali.
+              {t("about.paragraph.first")}
             </motion.p>
 
             <motion.p
@@ -119,7 +121,7 @@ export default function About() {
               viewport={{ once: true }}
               className="text-[var(--text-secondary)] leading-relaxed"
             >
-              Estamos en {siteConfig.address}, en la zona rosa del sur de Cali. El hotel cuenta con restaurante y una terraza rooftop con vista a la ciudad; nuestro equipo está disponible las 24 horas para acompañar tu estadía.
+              {t("about.paragraph.second", { address: siteConfig.address })}
             </motion.p>
 
             {/* Stats */}
@@ -135,7 +137,7 @@ export default function About() {
                 <div key={stat.label} className="text-center">
                   <stat.icon className="w-5 h-5 mx-auto mb-2" style={{ color: "var(--gold)" }} />
                   <div className="font-display text-2xl font-bold text-white">{stat.value}</div>
-                  <div className="text-xs text-[var(--text-muted)] mt-1 leading-tight">{stat.label}</div>
+                  <div className="text-xs text-[var(--text-muted)] mt-1 leading-tight">{t(stat.label)}</div>
                 </div>
               ))}
             </motion.div>
