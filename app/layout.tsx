@@ -58,11 +58,17 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LodgingBusiness",
+  "@type": "Hotel",
   name: siteConfig.name,
   description: siteConfig.seo.description,
   url: siteConfig.url,
-  telephone: siteConfig.phone,
+  telephone: siteConfig.contactPhones[0].href,
+  contactPoint: siteConfig.contactPhones.map((phone) => ({
+    "@type": "ContactPoint",
+    telephone: phone.href,
+    contactType: "reservations and hotel information",
+    availableLanguage: "Spanish",
+  })),
   email: siteConfig.email,
   address: {
     "@type": "PostalAddress",
@@ -71,12 +77,8 @@ const jsonLd = {
     addressCountry: "CO",
     streetAddress: siteConfig.address,
   },
-  geo: {
-    "@type": "GeoCoordinates",
-    latitude: siteConfig.geo.latitude,
-    longitude: siteConfig.geo.longitude,
-  },
   priceRange: siteConfig.priceRange,
+  numberOfRooms: 14,
   image: `${siteConfig.url}/images/hero.jpg`,
   sameAs: [siteConfig.socialLinks.instagram],
   amenityFeature: [

@@ -62,13 +62,16 @@ export default function Footer() {
               Contacto
             </h3>
             <div className="space-y-4">
-              <a
-                href={`tel:${siteConfig.phone}`}
-                className="flex items-start gap-3 text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors"
-              >
-                <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "var(--gold)" }} />
-                {siteConfig.phone}
-              </a>
+              {siteConfig.contactPhones.map((phone) => (
+                <a
+                  key={phone.href}
+                  href={`tel:${phone.href}`}
+                  className="flex items-start gap-3 text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors"
+                >
+                  <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "var(--gold)" }} />
+                  {phone.display}
+                </a>
+              ))}
               <a
                 href={`mailto:${siteConfig.email}`}
                 className="flex items-start gap-3 text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors break-all"

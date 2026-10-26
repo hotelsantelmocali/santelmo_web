@@ -95,13 +95,16 @@ export default function BookingSection({ preselectedRoom }: BookingSectionProps)
               <p className="text-xs text-[var(--text-secondary)] tracking-wide mb-4">
                 ¿Prefieres contactarnos directamente?
               </p>
-              <a
-                href={`tel:${siteConfig.phone}`}
-                className="flex items-center gap-3 text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors"
-              >
-                <Phone className="w-4 h-4 flex-shrink-0" style={{ color: "var(--gold)" }} />
-                Teléfono: {siteConfig.phone}
-              </a>
+              {siteConfig.contactPhones.map((phone) => (
+                <a
+                  key={phone.href}
+                  href={`tel:${phone.href}`}
+                  className="flex items-center gap-3 text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors"
+                >
+                  <Phone className="w-4 h-4 flex-shrink-0" style={{ color: "var(--gold)" }} />
+                  {phone.display}
+                </a>
+              ))}
               <a
                 href={`mailto:${siteConfig.email}`}
                 className="flex items-center gap-3 text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors break-all"

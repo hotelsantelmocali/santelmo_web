@@ -5,13 +5,14 @@ export const siteConfig = {
     "Hotel Santelmo recibe grupos deportivos, familiares, escolares y empresariales en el sur de Cali. Disfruta habitaciones cómodas, restaurante, terraza con vista y atención 24 horas.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://hotelsantelmo.com",
   phone: "318 735 1317",
+  contactPhones: [
+    { display: "+57 318 735 13 17", href: "+573187351317" },
+    { display: "+57 319 451 84 83", href: "+573194518483" },
+    { display: "+57 319 734 29 24", href: "+573197342924" },
+  ],
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+573187351317",
   email: "hotelsantelmocali@gmail.com",
   address: "Calle 9 No. 65-14, barrio Gran Limonar, zona rosa del sur de Cali",
-  geo: {
-    latitude: "3.4516",
-    longitude: "-76.5319",
-  },
   priceRange: "$70.000–$350.000 COP",
   socialLinks: {
     instagram: "https://instagram.com/hotelsantelmocali",
@@ -89,12 +90,12 @@ export const siteConfig = {
     { icon: "MapPin", label: "Terraza rooftop", description: "Disfruta de la vista de la ciudad" },
   ],
   seo: {
-    title: "Hotel Santelmo Cali | Habitaciones para grupos y equipos",
+    title: "Hotel en Cali para grupos | Hotel Santelmo",
     description:
-      "Alojamiento para grupos deportivos, familiares y empresariales en el sur de Cali. Conoce las habitaciones, tarifas con IVA incluido, restaurante y servicios de Hotel Santelmo.",
+      "Hotel en Cali para grupos deportivos, familias y empresas. 14 habitaciones en Gran Limonar, recepción 24 horas, desayuno americano y tarifas con IVA incluido.",
     keywords:
       "hotel en Cali, hotel para grupos Cali, hotel equipos deportivos Cali, alojamiento sur de Cali, Hotel Santelmo, habitaciones Cali",
-    ogImage: "/images/hero.jpg",
+    ogImage: "/images/social-share.jpg",
   },
 };
 
