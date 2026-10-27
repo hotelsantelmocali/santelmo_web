@@ -1,4 +1,7 @@
 const spanish = {
+  "cookies.title": "Uso de cookies",
+  "cookies.description": "Este sitio utiliza almacenamiento del navegador para recordar el idioma y guardar esta preferencia. No usamos cookies publicitarias ni de seguimiento.",
+  "cookies.dismiss": "Entendido",
   "language.select": "Seleccionar idioma",
   "language.spanish": "Español",
   "language.english": "English",
@@ -182,6 +185,9 @@ const spanish = {
 export type TranslationKey = keyof typeof spanish;
 
 const english: Record<TranslationKey, string> = {
+  "cookies.title": "Cookie notice",
+  "cookies.description": "This site uses browser storage to remember your language and save this preference. We don't use advertising or tracking cookies.",
+  "cookies.dismiss": "Got it",
   "language.select": "Select language",
   "language.spanish": "Español",
   "language.english": "English",
@@ -363,6 +369,9 @@ const english: Record<TranslationKey, string> = {
 };
 
 const portuguese: Record<TranslationKey, string> = {
+  "cookies.title": "Uso de cookies",
+  "cookies.description": "Este site usa o armazenamento do navegador para lembrar o idioma e salvar esta preferência. Não usamos cookies de publicidade nem de rastreamento.",
+  "cookies.dismiss": "Entendi",
   "language.select": "Selecionar idioma",
   "language.spanish": "Español",
   "language.english": "English",

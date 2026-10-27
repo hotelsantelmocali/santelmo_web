@@ -10,6 +10,7 @@ import Experience from "@/components/Experience";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import CookieNotice from "@/components/CookieNotice";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
         <BookingSection preselectedRoom={selectedRoom} />
         <Footer />
         <WhatsAppButton />
+        <CookieNotice />
       </main>
     </LanguageProvider>
   );

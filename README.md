@@ -35,6 +35,11 @@ El selector de fechas utiliza React DayPicker v10. Su tema está en
 pueden ajustar las variables `--rdp-*` y las reglas de color, tamaño, bordes y
 estados de las fechas.
 
+El aviso de cookies informa que el sitio guarda en el navegador el idioma y el
+estado del aviso. Su componente está en
+[`components/CookieNotice.tsx`](./components/CookieNotice.tsx) y sus textos
+localizados están en [`i18n/translations.ts`](./i18n/translations.ts).
+
 ## Comprobaciones
 
 - `npm run lint`
