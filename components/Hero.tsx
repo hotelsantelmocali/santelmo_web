@@ -53,7 +53,7 @@ export default function Hero() {
           src={heroImage}
           alt={t("hero.alt")}
           fill
-          priority
+          loading="eager"
           sizes="100vw"
           className="object-cover"
         />

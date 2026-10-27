@@ -38,7 +38,7 @@ export default function Footer() {
                 href={siteConfig.socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, color: "var(--gold)" }}
+                whileHover={{ scale: 1.1 }}
                 className="w-9 h-9 flex items-center justify-center border border-[var(--dark-border)] hover:border-[var(--gold)] transition-colors group"
               >
                 <MessageCircle className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--gold)] transition-colors" />

@@ -40,6 +40,12 @@ estado del aviso. Su componente está en
 [`components/CookieNotice.tsx`](./components/CookieNotice.tsx) y sus textos
 localizados están en [`i18n/translations.ts`](./i18n/translations.ts).
 
+La sección de Instagram muestra tarjetas que enlazan a las historias destacadas
+del perfil configuradas en
+[`components/InstagramHighlights.tsx`](./components/InstagramHighlights.tsx).
+Las historias se abren en Instagram; para mostrar videos directamente en el
+sitio se necesitarían archivos multimedia o una integración oficial compatible.
+
 ## Comprobaciones
 
 - `npm run lint`

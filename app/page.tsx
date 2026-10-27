@@ -8,6 +8,7 @@ import Gallery from "@/components/Gallery";
 import Rooms from "@/components/Rooms";
 import Experience from "@/components/Experience";
 import BookingSection from "@/components/BookingSection";
+import InstagramHighlights from "@/components/InstagramHighlights";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CookieNotice from "@/components/CookieNotice";
@@ -26,6 +27,7 @@ export default function Home() {
         <Rooms onSelectRoom={setSelectedRoom} />
         <Experience />
         <BookingSection preselectedRoom={selectedRoom} />
+        <InstagramHighlights />
         <Footer />
         <WhatsAppButton />
         <CookieNotice />

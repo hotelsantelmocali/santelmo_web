@@ -56,7 +56,7 @@ export default function Navbar() {
               aria-label={t("nav.logoAria")}
               whileHover={{ scale: 1.02 }}
             >
-              <BrandLogo className="h-auto w-32 sm:w-36 lg:w-40" />
+              <BrandLogo loading="eager" className="h-auto w-32 sm:w-36 lg:w-40" />
             </motion.button>
 
             {/* Desktop Nav */}
