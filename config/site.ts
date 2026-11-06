@@ -3,7 +3,7 @@ export const siteConfig = {
   tagline: "Un hotel para grupos, equipos y viajeros en Cali",
   description:
     "Hotel Santelmo recibe grupos deportivos, familiares, escolares y empresariales en el sur de Cali. Disfruta habitaciones cómodas, restaurante, terraza con vista y atención 24 horas.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://hotelsantelmo.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://hotelsantelmocali.com",
   phone: "318 735 1317",
   contactPhones: [
     { display: "+57 318 735 13 17", href: "+573187351317" },

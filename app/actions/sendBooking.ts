@@ -217,8 +217,8 @@ export async function sendBooking(
 
   const validated = validation.data;
 
-  const adminEmail = process.env.ADMIN_EMAIL || "hoteltelimocali@gmail.com";
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+  const adminEmail = process.env.ADMIN_EMAIL || "hotelsantelmocali@gmail.com";
+  const fromEmail = process.env.RESEND_FROM_EMAIL || "reservas@hotelsantelmocali.com";
 
   if (!process.env.RESEND_API_KEY) {
     console.error("[sendBooking] RESEND_API_KEY is not configured.");

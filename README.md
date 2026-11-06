@@ -12,6 +12,12 @@ TypeScript, Tailwind CSS y componentes interactivos en React.
    el WhatsApp internacional y la URL pública del sitio.
 4. Ejecuta `npm run dev` y abre <http://localhost:3000>.
 
+Para producción, configura `NEXT_PUBLIC_SITE_URL` como
+`https://hotelsantelmocali.com` y usa un remitente del dominio, por ejemplo
+`reservas@hotelsantelmocali.com`. Antes de enviar correos, agrega y verifica
+`hotelsantelmocali.com` en Resend y publica en el DNS del dominio los registros
+que Resend indique. Configura estas variables en el entorno de despliegue.
+
 Las solicitudes se validan en el servidor y se envían directamente por correo
 con Resend; no se guardan en una base de datos. Si falta `RESEND_API_KEY`, el
 formulario informa del error y no muestra una confirmación falsa.
