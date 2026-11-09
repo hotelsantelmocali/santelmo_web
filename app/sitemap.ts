@@ -6,5 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: siteConfig.url,
     },
+    {
+      url: new URL(siteConfig.rooftop.url, siteConfig.url).toString(),
+    },
   ];
 }

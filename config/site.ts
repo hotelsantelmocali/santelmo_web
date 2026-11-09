@@ -25,6 +25,14 @@ export const siteConfig = {
     { label: "Servicios", href: "#servicios" },
     { label: "Reservar", href: "#reserva" },
   ],
+  rooftop: {
+    name: "En las Nubes",
+    url: "/enlasnubes",
+    instagram: "https://instagram.com/enlasnubescali",
+    image: "/images/gastrobar-insta.jpeg",
+    logo: "/images/en-las-nubes-logo.png",
+    socialImage: "/images/en-las-nubes-social-share.jpg",
+  },
   rooms: [
     {
       id: "habitacion-sencilla",

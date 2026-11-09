@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Camera } from "lucide-react";
 import { siteConfig } from "@/config/site";
@@ -12,22 +13,28 @@ const highlights = [
     href: "https://www.instagram.com/stories/highlights/17932305797971023/",
     title: "instagram.highlight.about",
     image: "/images/nosotros-insta.jpeg",
+    external: true,
   },
   {
-    href: "https://www.instagram.com/stories/highlights/17894249166033310/",
+    href: siteConfig.rooftop.url,
     title: "instagram.highlight.gastrobar",
     image: "/images/gastrobar-insta.jpeg",
+    external: false,
   },
   {
     href: "https://www.instagram.com/stories/highlights/17907727844567530/",
     title: "instagram.highlight.guests",
     image: "/images/clientes-insta.jpeg",
+    external: true,
   },
 ] as const satisfies readonly {
   href: string;
   title: TranslationKey;
   image: string;
+  external: boolean;
 }[];
+
+const MotionLink = motion(Link);
 
 export default function InstagramHighlights() {
   const { t } = useLanguage();
@@ -64,14 +71,23 @@ export default function InstagramHighlights() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
           {highlights.map((highlight, index) => (
-            <motion.a
+            <MotionLink
               key={highlight.href}
               href={highlight.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("instagram.openHighlight", { number: index + 1 })}
+              transitionTypes={highlight.external ? undefined : ["en-las-nubes-forward"]}
+              target={highlight.external ? "_blank" : undefined}
+              rel={highlight.external ? "noopener noreferrer" : undefined}
+              aria-label={
+                highlight.external
+                  ? t("instagram.openHighlight", { number: index + 1 })
+                  : t("instagram.openRooftop")
+              }
               whileHover={{ y: -4 }}
-              className="group relative isolate flex min-h-52 flex-col justify-between overflow-hidden border border-[var(--gold)]/30 bg-[var(--dark-card)] p-6 transition-colors hover:border-[var(--gold)]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)] sm:min-h-64 sm:p-8"
+              className={`group relative isolate flex min-h-52 flex-col justify-between overflow-hidden border p-6 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)] sm:min-h-64 sm:p-8 ${
+                highlight.external
+                  ? "border-[var(--gold)]/30 bg-[var(--dark-card)] hover:border-[var(--gold)]/70"
+                  : "en-las-nubes-neon hover:border-[#ff6bc7]"
+              }`}
             >
               <Image
                 src={highlight.image}
@@ -111,7 +127,7 @@ export default function InstagramHighlights() {
               <span className="relative z-10 text-center text-[10px] uppercase tracking-[0.2em] text-[var(--gold-light)] drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
                 @hotelsantelmocali
               </span>
-            </motion.a>
+            </MotionLink>
           ))}
         </div>
       </div>

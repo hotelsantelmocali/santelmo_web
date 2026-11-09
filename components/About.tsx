@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Award, BedDouble, Clock } from "lucide-react";
 import { siteConfig } from "@/config/site";
@@ -123,6 +124,22 @@ export default function About() {
             >
               {t("about.paragraph.second", { address: siteConfig.address })}
             </motion.p>
+
+            <Link
+              href={siteConfig.rooftop.url}
+              transitionTypes={["en-las-nubes-forward"]}
+              className="en-las-nubes-neon inline-flex items-center gap-3 border px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
+            >
+              <Image
+                src={siteConfig.rooftop.logo}
+                alt=""
+                width={88}
+                height={28}
+                unoptimized
+                className="h-auto w-20"
+              />
+              <span>{t("about.rooftopLink")}</span>
+            </Link>
 
             {/* Stats */}
             <motion.div

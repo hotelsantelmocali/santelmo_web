@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import BrandLogo from "./BrandLogo";
@@ -54,15 +55,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {siteConfig.navLinks.map((link) => (
                 <li key={link.href}>
-                  <button
-                    onClick={() => {
-                      const el = document.getElementById(link.href.replace("#", ""));
-                      if (el) el.scrollIntoView({ behavior: "smooth" });
-                    }}
+                  <Link
+                    href={`/${link.href}`}
                     className="text-sm text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors tracking-wide"
                   >
                     {t(navTranslationKeys[link.href])}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>

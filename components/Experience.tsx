@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   Wifi,
   Utensils,
@@ -35,6 +36,7 @@ const experienceItems: {
   title: TranslationKey;
   subtitle: TranslationKey;
   description: TranslationKey;
+  href?: string;
 }[] = [
   {
     icon: "Users",
@@ -53,6 +55,7 @@ const experienceItems: {
     title: "experience.restaurant.title",
     subtitle: "experience.restaurant.subtitle",
     description: "experience.restaurant.description",
+    href: siteConfig.rooftop.url,
   },
 ];
 
@@ -127,15 +130,18 @@ export default function Experience() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {experienceItems.map((item, i) => {
               const Icon = iconMap[item.icon] || Users;
-              return (
+              const card = (
                 <motion.div
-                  key={item.title}
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.15 }}
                   whileHover={{ y: -4 }}
-                  className="relative bg-[var(--dark-card)] border border-[var(--dark-border)] hover:border-[var(--gold)]/40 p-8 text-center transition-all duration-400 group"
+                  className={`relative h-full border p-8 text-center transition-all duration-400 group ${
+                    item.href
+                      ? "en-las-nubes-neon"
+                      : "bg-[var(--dark-card)] border-[var(--dark-border)] hover:border-[var(--gold)]/40"
+                  }`}
                 >
                   <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center border border-[var(--gold)]/30 group-hover:border-[var(--gold)] transition-colors">
                     <Icon className="w-6 h-6" style={{ color: "var(--gold)" }} />
@@ -146,6 +152,21 @@ export default function Experience() {
                   <p className="text-xs text-white font-semibold tracking-wide mb-3 uppercase">{t(item.subtitle)}</p>
                   <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{t(item.description)}</p>
                 </motion.div>
+              );
+
+              return (
+                item.href ? (
+                  <Link
+                    key={item.title}
+                    href={item.href}
+                    transitionTypes={["en-las-nubes-forward"]}
+                    className="block h-full rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
+                  >
+                    {card}
+                  </Link>
+                ) : (
+                  <div key={item.title}>{card}</div>
+                )
               );
             })}
           </div>
@@ -185,15 +206,19 @@ export default function Experience() {
             {siteConfig.services.map((s, i) => {
               const Icon = iconMap[s.icon];
               const [titleKey, descriptionKey] = serviceTranslationKeys[i];
-              return (
+              const isRooftop = titleKey === "services.discount.title" || titleKey === "services.rooftop.title";
+              const card = (
                 <motion.div
-                  key={titleKey}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.07 }}
                   whileHover={{ scale: 1.03, borderColor: "var(--gold)" }}
-                  className="flex flex-col items-center text-center p-6 border border-[var(--dark-border)] hover:border-[var(--gold)]/50 transition-all duration-300 group"
+                  className={`flex h-full flex-col items-center border p-6 text-center transition-all duration-300 group ${
+                    isRooftop
+                      ? "en-las-nubes-neon"
+                      : "border-[var(--dark-border)] hover:border-[var(--gold)]/50"
+                  }`}
                 >
                   <div className="w-12 h-12 flex items-center justify-center mb-3 border border-[var(--dark-border)] group-hover:border-[var(--gold)]/50 transition-colors">
                     <Icon className="w-5 h-5 transition-colors group-hover:text-[var(--gold)]" style={{ color: "var(--text-muted)" }} />
@@ -201,6 +226,21 @@ export default function Experience() {
                   <h3 className="text-sm font-semibold text-white mb-1">{t(titleKey)}</h3>
                   <p className="text-xs text-[var(--text-muted)]">{t(descriptionKey)}</p>
                 </motion.div>
+              );
+
+              return (
+                isRooftop ? (
+                  <Link
+                    key={titleKey}
+                    href={siteConfig.rooftop.url}
+                    transitionTypes={["en-las-nubes-forward"]}
+                    className="block h-full rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
+                  >
+                    {card}
+                  </Link>
+                ) : (
+                  <div key={titleKey}>{card}</div>
+                )
               );
             })}
           </div>

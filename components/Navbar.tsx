@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
@@ -21,6 +24,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { t } = useLanguage();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -28,8 +32,57 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    let flashTimer: number | undefined;
+
+    const handleRooftopNavigation = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const link = target.closest("a[href]");
+      if (!(link instanceof HTMLAnchorElement) || link.target || link.hasAttribute("download")) return;
+
+      const destination = new URL(link.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+
+      const isEnteringRooftop =
+        window.location.pathname !== siteConfig.rooftop.url &&
+        destination.pathname === siteConfig.rooftop.url;
+      const isReturningHome =
+        window.location.pathname === siteConfig.rooftop.url &&
+        destination.pathname === "/";
+
+      if (!isEnteringRooftop && !isReturningHome) return;
+
+      const transitionClass = isEnteringRooftop
+        ? "en-las-nubes-flash-forward"
+        : "en-las-nubes-flash-back";
+      const root = document.documentElement;
+      root.classList.remove("en-las-nubes-flash-forward", "en-las-nubes-flash-back");
+      void root.offsetWidth;
+      root.classList.add(transitionClass);
+
+      window.clearTimeout(flashTimer);
+      flashTimer = window.setTimeout(() => {
+        root.classList.remove(transitionClass);
+      }, 1100);
+    };
+
+    document.addEventListener("click", handleRooftopNavigation);
+    return () => document.removeEventListener("click", handleRooftopNavigation);
+  }, []);
+
   const handleNavClick = (href: string) => {
     setIsMobileOpen(false);
+    if (window.location.pathname !== "/") {
+      router.push(`/${href}`);
+      return;
+    }
+
     const id = href.replace("#", "");
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -41,6 +94,7 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ viewTransitionName: "site-header" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
             ? "glass-dark border-b border-[var(--gold)]/20 py-3"
@@ -50,17 +104,23 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <motion.button
-              onClick={() => handleNavClick("#inicio")}
+            <Link
+              href="/#inicio"
+              transitionTypes={["santelmo-home-return"]}
+              onClick={(event) => {
+                if (window.location.pathname === "/") {
+                  event.preventDefault();
+                  handleNavClick("#inicio");
+                }
+              }}
               className="flex items-center"
               aria-label={t("nav.logoAria")}
-              whileHover={{ scale: 1.02 }}
             >
               <BrandLogo loading="eager" className="h-auto w-32 sm:w-36 lg:w-40" />
-            </motion.button>
+            </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-6">
               {siteConfig.navLinks.map((link) => (
                 <button
                   key={link.href}
@@ -71,6 +131,23 @@ export default function Navbar() {
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-[var(--gold)] transition-all duration-300 group-hover:w-full" />
                 </button>
               ))}
+              <Link
+                href={siteConfig.rooftop.url}
+                transitionTypes={["en-las-nubes-forward"]}
+                onClick={() => setIsMobileOpen(false)}
+                aria-label={t("nav.rooftopLogoAria")}
+                className="rounded-sm transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
+              >
+                <Image
+                  src={siteConfig.rooftop.logo}
+                  alt={t("nav.rooftopLogoAria")}
+                  width={123}
+                  height={40}
+                  sizes="123px"
+                  unoptimized
+                  className="h-auto w-[104px] lg:w-[123px]"
+                />
+              </Link>
             </nav>
 
             {/* CTA Button */}
@@ -142,6 +219,28 @@ export default function Navbar() {
                 {t(navTranslationKeys[link.href])}
               </motion.button>
             ))}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: siteConfig.navLinks.length * 0.08, duration: 0.3 }}
+            >
+              <Link
+                href={siteConfig.rooftop.url}
+                transitionTypes={["en-las-nubes-forward"]}
+                onClick={() => setIsMobileOpen(false)}
+                aria-label={t("nav.rooftopLogoAria")}
+                className="block rounded-sm transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
+              >
+                <Image
+                  src={siteConfig.rooftop.logo}
+                  alt={t("nav.rooftopLogoAria")}
+                  width={164}
+                  height={53}
+                  unoptimized
+                  className="h-auto w-40"
+                />
+              </Link>
+            </motion.div>
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
