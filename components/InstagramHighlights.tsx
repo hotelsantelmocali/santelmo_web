@@ -74,7 +74,6 @@ export default function InstagramHighlights() {
             <MotionLink
               key={highlight.href}
               href={highlight.href}
-              transitionTypes={highlight.external ? undefined : ["en-las-nubes-forward"]}
               target={highlight.external ? "_blank" : undefined}
               rel={highlight.external ? "noopener noreferrer" : undefined}
               aria-label={

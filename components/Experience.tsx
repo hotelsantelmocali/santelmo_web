@@ -159,7 +159,6 @@ export default function Experience() {
                   <Link
                     key={item.title}
                     href={item.href}
-                    transitionTypes={["en-las-nubes-forward"]}
                     className="block h-full rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
                   >
                     {card}
@@ -233,7 +232,6 @@ export default function Experience() {
                   <Link
                     key={titleKey}
                     href={siteConfig.rooftop.url}
-                    transitionTypes={["en-las-nubes-forward"]}
                     className="block h-full rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
                   >
                     {card}

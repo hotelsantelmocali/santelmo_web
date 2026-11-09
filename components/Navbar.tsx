@@ -32,50 +32,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    let flashTimer: number | undefined;
-
-    const handleRooftopNavigation = (event: MouseEvent) => {
-      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-        return;
-      }
-
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-
-      const link = target.closest("a[href]");
-      if (!(link instanceof HTMLAnchorElement) || link.target || link.hasAttribute("download")) return;
-
-      const destination = new URL(link.href, window.location.href);
-      if (destination.origin !== window.location.origin) return;
-
-      const isEnteringRooftop =
-        window.location.pathname !== siteConfig.rooftop.url &&
-        destination.pathname === siteConfig.rooftop.url;
-      const isReturningHome =
-        window.location.pathname === siteConfig.rooftop.url &&
-        destination.pathname === "/";
-
-      if (!isEnteringRooftop && !isReturningHome) return;
-
-      const transitionClass = isEnteringRooftop
-        ? "en-las-nubes-flash-forward"
-        : "en-las-nubes-flash-back";
-      const root = document.documentElement;
-      root.classList.remove("en-las-nubes-flash-forward", "en-las-nubes-flash-back");
-      void root.offsetWidth;
-      root.classList.add(transitionClass);
-
-      window.clearTimeout(flashTimer);
-      flashTimer = window.setTimeout(() => {
-        root.classList.remove(transitionClass);
-      }, 1100);
-    };
-
-    document.addEventListener("click", handleRooftopNavigation);
-    return () => document.removeEventListener("click", handleRooftopNavigation);
-  }, []);
-
   const handleNavClick = (href: string) => {
     setIsMobileOpen(false);
     if (window.location.pathname !== "/") {
@@ -94,7 +50,6 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        style={{ viewTransitionName: "site-header" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
             ? "glass-dark border-b border-[var(--gold)]/20 py-3"
@@ -106,7 +61,6 @@ export default function Navbar() {
             {/* Logo */}
             <Link
               href="/#inicio"
-              transitionTypes={["santelmo-home-return"]}
               onClick={(event) => {
                 if (window.location.pathname === "/") {
                   event.preventDefault();
@@ -133,7 +87,6 @@ export default function Navbar() {
               ))}
               <Link
                 href={siteConfig.rooftop.url}
-                transitionTypes={["en-las-nubes-forward"]}
                 onClick={() => setIsMobileOpen(false)}
                 aria-label={t("nav.rooftopLogoAria")}
                 className="rounded-sm transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
@@ -226,7 +179,6 @@ export default function Navbar() {
             >
               <Link
                 href={siteConfig.rooftop.url}
-                transitionTypes={["en-las-nubes-forward"]}
                 onClick={() => setIsMobileOpen(false)}
                 aria-label={t("nav.rooftopLogoAria")}
                 className="block rounded-sm transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"

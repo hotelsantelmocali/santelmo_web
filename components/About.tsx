@@ -127,7 +127,6 @@ export default function About() {
 
             <Link
               href={siteConfig.rooftop.url}
-              transitionTypes={["en-las-nubes-forward"]}
               className="en-las-nubes-neon inline-flex items-center gap-3 border px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6bc7]"
             >
               <Image

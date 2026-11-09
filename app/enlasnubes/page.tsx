@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ViewTransition } from "react";
 import { siteConfig } from "@/config/site";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import CookieNotice from "@/components/CookieNotice";
@@ -93,26 +92,13 @@ const rooftopJsonLd = {
 export default function EnLasNubesPage() {
   return (
     <LanguageProvider>
-      <ViewTransition
-        enter={{
-          "en-las-nubes-forward": "en-las-nubes-route-enter",
-          "santelmo-home-return": "santelmo-route-enter",
-          default: "none",
-        }}
-        exit={{
-          "en-las-nubes-forward": "en-las-nubes-route-exit",
-          "santelmo-home-return": "santelmo-route-exit",
-          default: "none",
-        }}
-      >
-        <div>
-          <Navbar />
-          <EnLasNubesContent />
-          <Footer />
-          <WhatsAppButton />
-          <CookieNotice />
-        </div>
-      </ViewTransition>
+      <div>
+        <Navbar />
+        <EnLasNubesContent />
+        <Footer />
+        <WhatsAppButton />
+        <CookieNotice />
+      </div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
