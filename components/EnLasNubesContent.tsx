@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, MapPin, Music2, Utensils, Wine } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  MapPin,
+  MoveHorizontal,
+  Music2,
+  Utensils,
+  Wine,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { siteConfig } from "@/config/site";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -347,15 +355,42 @@ export default function EnLasNubesContent() {
                           </span>
                         </div>
 
-                        <div className="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                        {meal.dishes.length > 1 && (
+                          <p className="mb-3 flex items-center justify-end gap-2 text-xs text-[var(--text-muted)] sm:hidden">
+                            {t("enLasNubes.menuSwipeHint")}
+                            <MoveHorizontal
+                              className="h-4 w-4 text-[#ff8bd4]"
+                              aria-hidden="true"
+                            />
+                          </p>
+                        )}
+
+                        <div
+                          role={meal.dishes.length > 1 ? "region" : undefined}
+                          aria-label={
+                            meal.dishes.length > 1 ? t(meal.title) : undefined
+                          }
+                          tabIndex={meal.dishes.length > 1 ? 0 : undefined}
+                          className={
+                            meal.dishes.length > 1
+                              ? "-mx-4 flex snap-x snap-mandatory items-stretch gap-5 overflow-x-auto overscroll-x-contain pl-6 pr-4 pb-4 scroll-pl-6 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 sm:scroll-pl-0 xl:grid-cols-4"
+                              : "grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4"
+                          }
+                        >
                           {meal.dishes.map((dish, index) => (
                             <article
                               key={dish.title}
-                              className="group flex flex-col overflow-hidden border border-[#d6c6a5]/65 bg-[#f7f2e8] shadow-[0_8px_28px_rgba(0,0,0,0.2)] transition-transform duration-300 hover:-translate-y-1"
+                              className={`group flex flex-col overflow-hidden border border-[#d6c6a5]/65 bg-[#f7f2e8] shadow-[0_8px_28px_rgba(0,0,0,0.2)] transition-transform duration-300 hover:-translate-y-1 ${
+                                meal.dishes.length > 1
+                                  ? "w-[82vw] max-w-[22rem] flex-none snap-start sm:w-auto sm:max-w-none"
+                                  : ""
+                              }`}
                             >
                               <div
                                 className={`relative overflow-hidden bg-[#e7dfd1] ${
-                                  dish.portrait ? "aspect-[4/5]" : "aspect-[16/9]"
+                                  dish.portrait
+                                    ? "aspect-[4/5]"
+                                    : "aspect-square sm:aspect-[16/9]"
                                 }`}
                               >
                                 <Image
@@ -377,7 +412,7 @@ export default function EnLasNubesContent() {
                                     : t("enLasNubes.menuOption", { number: index + 1 })}
                                 </span>
                               </div>
-                              <div className="flex flex-1 flex-col p-5 sm:p-6">
+                              <div className="flex flex-1 flex-col px-5 py-8 sm:p-6">
                                 <h5 className="font-display text-xl font-semibold leading-snug text-[#32281e]">
                                   {t(dish.title)}
                                 </h5>
