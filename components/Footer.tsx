@@ -6,7 +6,11 @@ import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import BrandLogo from "./BrandLogo";
 import { useLanguage } from "@/i18n/LanguageProvider";
-import type { TranslationKey } from "@/i18n/translations";
+import {
+  translations,
+  type Language,
+  type TranslationKey,
+} from "@/i18n/translations";
 
 const navTranslationKeys: Record<string, TranslationKey> = {
   "#inicio": "nav.home",
@@ -16,9 +20,30 @@ const navTranslationKeys: Record<string, TranslationKey> = {
   "#reserva": "nav.booking",
 };
 
-export default function Footer() {
-  const { t } = useLanguage();
+type FooterProps = {
+  locale?: Language;
+};
 
+type FooterTranslator = (
+  key: TranslationKey,
+  values?: Record<string, string | number>
+) => string;
+
+export default function Footer({ locale }: FooterProps = {}) {
+  if (locale) {
+    const translate: FooterTranslator = (key) => translations[locale][key];
+    return <FooterContent t={translate} />;
+  }
+
+  return <LocalizedFooter />;
+}
+
+function LocalizedFooter() {
+  const { t } = useLanguage();
+  return <FooterContent t={t} />;
+}
+
+function FooterContent({ t }: { t: FooterTranslator }) {
   return (
     <footer
       id="contacto"

@@ -1,10 +1,12 @@
 import { eventLocales, type EventLocale } from "@/lib/events";
+import Footer from "@/components/Footer";
 import EventsHeader from "./EventsHeader";
 
 export default function EventsLoading({ locale }: { locale: EventLocale }) {
   const otherLocale: EventLocale = locale === "es" ? "en" : "es";
 
   return (
+    <>
     <main lang={locale === "es" ? "es" : "en"} className="min-h-screen bg-[var(--dark-bg)]">
       <EventsHeader
         locale={locale}
@@ -17,5 +19,7 @@ export default function EventsLoading({ locale }: { locale: EventLocale }) {
         {locale === "es" ? "Cargando eventos..." : "Loading events..."}
       </div>
     </main>
+    <Footer locale={locale} />
+    </>
   );
 }

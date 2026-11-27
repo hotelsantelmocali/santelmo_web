@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { eventLocales, type EventLocale } from "@/lib/events";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function EventsHeader({
   locale,
@@ -15,10 +16,9 @@ export default function EventsHeader({
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="font-display text-sm font-bold tracking-[0.18em] text-white sm:text-base"
           aria-label={isEnglish ? "Hotel Santelmo home" : "Inicio de Hotel Santelmo"}
         >
-          HOTEL <span className="text-[var(--gold)]">SANTELMO</span>
+          <BrandLogo className="h-auto w-32 sm:w-40" loading="eager" />
         </Link>
         <nav
           aria-label={isEnglish ? "Events navigation" : "Navegación de eventos"}

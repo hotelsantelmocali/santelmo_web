@@ -12,6 +12,7 @@ import {
   type EventDocument,
   type EventLocale,
 } from "@/lib/events";
+import Footer from "@/components/Footer";
 import EventsHeader from "./EventsHeader";
 import { PrismicRichText } from "@prismicio/react";
 
@@ -98,6 +99,7 @@ export default function EventDetail({
   };
 
   return (
+    <>
     <main lang={locale === "es" ? "es" : "en"} className="min-h-screen bg-[var(--dark-bg)]">
       <script
         type="application/ld+json"
@@ -218,5 +220,7 @@ export default function EventDetail({
         </div>
       </article>
     </main>
+    <Footer locale={locale} />
+    </>
   );
 }

@@ -9,6 +9,7 @@ import {
   type EventDocument,
   type EventLocale,
 } from "@/lib/events";
+import Footer from "@/components/Footer";
 import EventsHeader from "./EventsHeader";
 
 const listingCopy = {
@@ -56,6 +57,7 @@ export default function EventsListing({
   const otherLocale: EventLocale = locale === "es" ? "en" : "es";
 
   return (
+    <>
     <main lang={locale === "es" ? "es" : "en"} className="min-h-screen bg-[var(--dark-bg)]">
       <EventsHeader locale={locale} alternateHref={eventLocales[otherLocale].href} />
       <section className="relative overflow-hidden border-b border-[var(--gold)]/15 px-4 pb-16 pt-36 sm:px-6 sm:pb-20 sm:pt-40">
@@ -184,5 +186,7 @@ export default function EventsListing({
         )}
       </section>
     </main>
+    <Footer locale={locale} />
+    </>
   );
 }
