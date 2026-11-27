@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format, startOfToday } from "date-fns";
+import { format, isValid, parseISO, startOfToday } from "date-fns";
 import { enUS, es, ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
@@ -131,7 +131,6 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
   const calendarDialogRef = useRef<HTMLDivElement>(null);
   const calendarScrollTimeoutRef = useRef<number | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [isRoomOpen, setIsRoomOpen] = useState(false);
   const [today, setToday] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -169,13 +168,26 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
 
   const adults = useWatch({ control, name: "adults" }) ?? 2;
   const children = useWatch({ control, name: "children" }) ?? 0;
+  const checkIn = useWatch({ control, name: "checkIn" });
+  const checkOut = useWatch({ control, name: "checkOut" });
   const selectedRoom = useWatch({ control, name: "roomType" }) ?? "indifferent";
+  const dateRange = checkIn ? { from: checkIn, to: checkOut } : undefined;
 
   useEffect(() => {
     if (preselectedRoom) {
       setValue("roomType", preselectedRoom);
     }
   }, [preselectedRoom, setValue]);
+
+  useEffect(() => {
+    const checkInParam = new URLSearchParams(window.location.search).get("checkIn");
+    if (!checkInParam || !/^\d{4}-\d{2}-\d{2}$/.test(checkInParam)) return;
+
+    const checkIn = parseISO(checkInParam);
+    if (!isValid(checkIn) || checkIn < startOfToday()) return;
+
+    setValue("checkIn", checkIn);
+  }, [setValue]);
 
   useEffect(() => {
     return () => {
@@ -221,7 +233,6 @@ export default function BookingForm({ preselectedRoom }: BookingFormProps) {
   };
 
   const handleDateSelect = (range: DateRange | undefined) => {
-    setDateRange(range);
     setValue("checkIn", range?.from);
     setValue("checkOut", range?.to);
   };

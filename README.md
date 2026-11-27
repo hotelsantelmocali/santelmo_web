@@ -28,6 +28,41 @@ Los datos visibles, habitaciones, navegación, contacto y SEO se centralizan en
 [`config/site.ts`](./config/site.ts). Las imágenes optimizadas se encuentran en
 `public/images/`; reemplázalas manteniendo los nombres o actualiza sus rutas.
 
+## Eventos con Prismic
+
+La sección de eventos usa sus propias rutas y locales: `/eventos` (español) y
+`/events` (inglés), independientemente del selector de idioma del hotel. Configura
+`PRISMIC_REPOSITORY_NAME`, `PRISMIC_LOCALE_ES` y `PRISMIC_LOCALE_EN` en `.env.local`
+y en las variables de entorno de Vercel. Los códigos de idioma deben coincidir
+exactamente con los de **Settings → Translations & Locales** en Prismic. El
+contenido publicado debe ser accesible desde la API pública; si el repositorio
+es privado, agrega `PRISMIC_ACCESS_TOKEN` como variable secreta.
+
+En Prismic crea un tipo repetible con API ID `event` y estos campos:
+
+- `uid` (UID), `title` (Key Text), `summary` (Key Text), `start_date` (Date), `start_time`
+  (Key Text), `end_date` (Date), `end_time` (Key Text).
+- `venue`, `address`, `city`, `region`, `organizer` (Key Text).
+- `hero_image`, `seo_image` (Image), `description` (Rich Text),
+  `ticket_url` (Link).
+- `meta_title`, `meta_description` (Key Text).
+
+Publica una traducción por idioma para que el selector de eventos enlace el
+detalle equivalente cuando exista. Cada evento publicado aparece en su idioma;
+los pasados dejan de mostrarse en el listado y el sitemap.
+
+Para reflejar publicaciones y despublicaciones sin desplegar de nuevo, define
+`PRISMIC_WEBHOOK_SECRET` en Vercel y configura en **Settings → Webhooks** una
+notificación para **Documents published** y **Documents unpublished**, apuntando
+a `https://hotelsantelmocali.com/api/revalidate`. Usa el mismo secreto en la
+configuración del webhook. El endpoint invalida la caché de eventos; no crea un
+deploy de Vercel.
+
+Las páginas de detalle incluyen metadatos propios, enlaces canónicos/hreflang y
+datos estructurados `Event` para eventos futuros. Google decide cuándo rastrear
+e indexar las páginas; el marcado no garantiza aparecer en resultados
+enriquecidos.
+
 ## Idiomas y calendario
 
 El sitio ofrece español, inglés y portugués. Las traducciones están en

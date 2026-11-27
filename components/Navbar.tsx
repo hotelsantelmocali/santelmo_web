@@ -23,8 +23,9 @@ const navTranslationKeys: Record<string, TranslationKey> = {
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const router = useRouter();
+  const eventsHref = language === "en" ? "/events" : "/eventos";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -85,6 +86,13 @@ export default function Navbar() {
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-[var(--gold)] transition-all duration-300 group-hover:w-full" />
                 </button>
               ))}
+              <Link
+                href={eventsHref}
+                className="text-xs tracking-widest uppercase text-[var(--text-secondary)] hover:text-[var(--gold)] transition-colors duration-300 relative group"
+              >
+                {t("nav.events")}
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-[var(--gold)] transition-all duration-300 group-hover:w-full" />
+              </Link>
               <Link
                 href={siteConfig.rooftop.url}
                 onClick={() => setIsMobileOpen(false)}
@@ -178,6 +186,19 @@ export default function Navbar() {
               transition={{ delay: siteConfig.navLinks.length * 0.08, duration: 0.3 }}
             >
               <Link
+                href={eventsHref}
+                onClick={() => setIsMobileOpen(false)}
+                className="font-display text-3xl text-[var(--text-primary)] hover:text-[var(--gold)] transition-colors tracking-widest uppercase"
+              >
+                {t("nav.events")}
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: (siteConfig.navLinks.length + 1) * 0.08, duration: 0.3 }}
+            >
+              <Link
                 href={siteConfig.rooftop.url}
                 onClick={() => setIsMobileOpen(false)}
                 aria-label={t("nav.rooftopLogoAria")}
@@ -196,7 +217,7 @@ export default function Navbar() {
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: siteConfig.navLinks.length * 0.08 }}
+              transition={{ delay: (siteConfig.navLinks.length + 2) * 0.08 }}
               onClick={() => handleNavClick("#reserva")}
               className="mt-4 px-10 py-4 text-sm tracking-widest uppercase font-semibold bg-[var(--gold)] text-[var(--dark-bg)]"
             >
